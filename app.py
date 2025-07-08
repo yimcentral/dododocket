@@ -11,12 +11,22 @@ from docx.oxml.ns import qn
 
 st.set_page_config(page_title="Reference List Generator", layout="centered")
 st.title("📄 Reference List Generator")
+with st.expander("🛈 How to use this tool"):
+    st.markdown("[First-time user guide (Word doc)](https://bing.com)")
+
 
 uploaded_file = st.file_uploader("Upload a spreadsheet (.xlsx or .ods)", type=["xlsx", "ods"])
 project_name = st.text_input("Project Name (for file name)", "Example Project")
 prefix = st.text_input("Global Prefix (e.g., CEC, TT)", "CEC")
 agency_name = st.text_input("Full Agency Name", "California Energy Commission")
 proceeding = st.text_input("CEC Proceeding Code (e.g. 24-OPT-05)", "24-OPT-05")
+add_header = st.checkbox("Add docket title and headers to top of document")
+
+if add_header:
+    user_project_title = st.text_input("Project Title (for document header)", "")
+else:
+    user_project_title = ""
+
 
 def generate_suffixes(n):
     suffixes = []
@@ -88,7 +98,7 @@ def add_styled_hyperlink(paragraph, url, text):
     hyperlink.append(run)
     paragraph._p.append(hyperlink)
 
-def build_styled_docx(references):
+def build_styled_docx(references, header_lines=None):
     doc = Document()
     normal = doc.styles['Normal']
     normal.font.name = 'Tahoma'
@@ -96,6 +106,16 @@ def build_styled_docx(references):
     normal.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
     normal.paragraph_format.space_before = Pt(6)
     normal.paragraph_format.space_after = Pt(6)
+
+    if header_lines:
+        for line in header_lines:
+            p = doc.add_paragraph(line)
+            p.alignment = 1  # Center
+            run = p.runs[0]
+            run.font.name = 'Tahoma'
+            run.font.size = Pt(14)
+            run.bold = True
+        doc.add_paragraph()  # spacer
 
     heading = doc.styles['Heading 2']
     heading.font.name = 'Tahoma'
@@ -123,7 +143,14 @@ if uploaded_file and prefix and agency_name and proceeding:
     try:
         df = pd.read_excel(uploaded_file, engine="odf" if uploaded_file.name.endswith(".ods") else None)
         refs = generate_references(df, prefix, agency_name, proceeding)
-        doc = build_styled_docx(refs)
+        header_lines = None
+if add_header and user_project_title.strip():
+    header_lines = [
+        user_project_title.strip(),
+        "DOCKET REFERENCES LIST",
+        proceeding
+    ]
+doc = build_styled_docx(refs, header_lines=header_lines)
         buffer = BytesIO()
         doc.save(buffer)
         st.success("✅ Reference list ready!")
