@@ -1,5 +1,4 @@
-
-import streamlit as st
+﻿import streamlit as st
 import pandas as pd
 from io import BytesIO
 from docx import Document
@@ -11,12 +10,22 @@ from docx.oxml.ns import qn
 
 st.set_page_config(page_title="Reference List Generator", layout="centered")
 st.title("📄 Reference List Generator")
+with st.expander("🛈 How to use this tool"):
+    st.markdown("[First-time user guide (Word doc)](https://bing.com)")
+
 
 uploaded_file = st.file_uploader("Upload a spreadsheet (.xlsx or .ods)", type=["xlsx", "ods"])
 project_name = st.text_input("Project Name (for file name)", "Example Project")
 prefix = st.text_input("Global Prefix (e.g., CEC, TT)", "CEC")
 agency_name = st.text_input("Full Agency Name", "California Energy Commission")
 proceeding = st.text_input("CEC Proceeding Code (e.g. 24-OPT-05)", "24-OPT-05")
+add_header = st.checkbox("Add docket title and headers to top of document")
+
+if add_header:
+    user_project_title = st.text_input("Project Title (for document header)", "")
+else:
+    user_project_title = ""
+
 
 def generate_suffixes(n):
     suffixes = []
@@ -88,8 +97,17 @@ def add_styled_hyperlink(paragraph, url, text):
     hyperlink.append(run)
     paragraph._p.append(hyperlink)
 
-def build_styled_docx(references):
+def build_styled_docx(references, header_lines=None):
     doc = Document()
+    from docx.shared import Inches
+    
+    sections = doc.sections
+    for section in sections:
+        section.top_margin = Inches(1)
+        section.bottom_margin = Inches(1)
+        section.left_margin = Inches(1)
+        section.right_margin = Inches(1)
+
     normal = doc.styles['Normal']
     normal.font.name = 'Tahoma'
     normal.font.size = Pt(12)
@@ -97,11 +115,34 @@ def build_styled_docx(references):
     normal.paragraph_format.space_before = Pt(6)
     normal.paragraph_format.space_after = Pt(6)
 
-    heading = doc.styles['Heading 2']
-    heading.font.name = 'Tahoma'
-    heading.font.size = Pt(12)
-    heading.paragraph_format.space_before = Pt(12)
-    heading.paragraph_format.space_after = Pt(6)
+    if header_lines:
+        for line in header_lines:
+            p = doc.add_paragraph(line.upper())
+            p.alignment = 1  # Center
+            run = p.runs[0]
+            run.font.name = 'Tahoma'
+            run.font.size = Pt(14)
+            run.bold = True
+            p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+            p.paragraph_format.space_before = Pt(0)
+            p.paragraph_format.space_after = Pt(0)
+        # doc.add_paragraph()  # spacer
+
+        # Replace blank line with agency name
+        agency_para = doc.add_paragraph(agency_name)
+        run = agency_para.runs[0]
+        run.font.name = 'Tahoma'
+        run.font.size = Pt(12)
+        run.bold = True
+        agency_para.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        agency_para.paragraph_format.space_before = Pt(12)
+        agency_para.paragraph_format.space_after = Pt(6)
+            
+        heading = doc.styles['Heading 2']
+        heading.font.name = 'Tahoma'
+        heading.font.size = Pt(12)
+        heading.paragraph_format.space_before = Pt(12)
+        heading.paragraph_format.space_after = Pt(6)
 
     for ref_text, url in references:
         p = doc.add_paragraph()
@@ -110,8 +151,8 @@ def build_styled_docx(references):
         run.font.size = Pt(12)
         run.font.underline = False
         run.font.color.rgb = None
-        p.paragraph_format.first_line_indent = Pt(-18)
-        p.paragraph_format.left_indent = Pt(18)
+        p.paragraph_format.first_line_indent = Pt(-36)
+        p.paragraph_format.left_indent = Pt(36)
         p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
         p.paragraph_format.space_before = Pt(6)
         p.paragraph_format.space_after = Pt(6)
@@ -123,10 +164,24 @@ if uploaded_file and prefix and agency_name and proceeding:
     try:
         df = pd.read_excel(uploaded_file, engine="odf" if uploaded_file.name.endswith(".ods") else None)
         refs = generate_references(df, prefix, agency_name, proceeding)
-        doc = build_styled_docx(refs)
+
+        header_lines = None
+        if add_header and user_project_title.strip():
+            header_lines = [
+                user_project_title.strip(),
+                "DOCKET REFERENCES LIST",
+                proceeding
+            ]
+
+        doc = build_styled_docx(refs, header_lines=header_lines)
         buffer = BytesIO()
         doc.save(buffer)
         st.success("✅ Reference list ready!")
-        st.download_button("📥 Download .docx Reference List", buffer.getvalue(), file_name=f"{project_name}_References.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        st.download_button(
+            "📥 Download .docx Reference List",
+            buffer.getvalue(),
+            file_name=f"{project_name}_References.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
     except Exception as e:
         st.error(f"❌ Error: {e}")
