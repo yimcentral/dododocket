@@ -12,7 +12,7 @@ st.set_page_config(page_title="Reference List Generator", layout="centered")
 st.title("📄 Reference List Generator")
 
 with st.expander("🛈 How to use this tool"):
-    st.markdown("[First-time user guide (Word doc)](https://example.com)")
+    st.markdown("[First-time user guide (Word doc)](https://caenergy-my.sharepoint.com/:w:/g/personal/yiming_luo_energy_ca_gov/EZDfTXBgKyxAvGlEmyAf4s4BCiZkErxsJUAIfUAgEyOeCA?e=vgcP3p)")
 
 uploaded_file = st.file_uploader("Upload a spreadsheet (.xlsx or .ods)", type=["xlsx", "ods"])
 project_name = st.text_input("Project Name (for file name)", "Example Project")
