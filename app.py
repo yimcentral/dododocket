@@ -1,4 +1,4 @@
-
+﻿
 import streamlit as st
 import pandas as pd
 from io import BytesIO
@@ -140,7 +140,7 @@ def build_styled_docx(references, header_lines=None):
     return doc
 
 if uploaded_file and prefix and agency_name and proceeding:
-    try:
+try:
     df = pd.read_excel(uploaded_file, engine="odf" if uploaded_file.name.endswith(".ods") else None)
     refs = generate_references(df, prefix, agency_name, proceeding)
 
@@ -162,7 +162,5 @@ if uploaded_file and prefix and agency_name and proceeding:
         file_name=f"{project_name}_References.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
-
 except Exception as e:
     st.error(f"❌ Error: {e}")
-
