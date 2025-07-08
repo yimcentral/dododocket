@@ -9,7 +9,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
 st.set_page_config(page_title="Reference List Generator", layout="centered")
-st.title("📄 Reference List Generator")
+st.title("CEC Docket Reference List Generator")
 
 with st.expander("🛈 How to use this tool"):
     st.markdown("[First-time user guide (Word doc)](https://caenergy-my.sharepoint.com/:w:/g/personal/yiming_luo_energy_ca_gov/EZDfTXBgKyxAvGlEmyAf4s4BCiZkErxsJUAIfUAgEyOeCA?e=vgcP3p)")
