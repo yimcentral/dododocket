@@ -37,7 +37,9 @@ def generate_references(df, prefix, agency_name, proceeding):
     df['GroupIndex'] = df.groupby('Year').cumcount()
     suffix_dict = {y: generate_suffixes(len(g)) for y, g in df.groupby('Year')}
     df['Suffix'] = df.apply(lambda r: suffix_dict[r['Year']][r['GroupIndex']], axis=1)
-    df['Formatted Date'] = pd.to_datetime(df['Docketed Date'], errors='coerce').dt.strftime('%B %#d, %Y')
+    df['Formatted Date'] = pd.to_datetime(df['Docketed Date'], errors='coerce').apply(
+    lambda x: f"{x.strftime('%B')} {x.day}, {x.year}" if pd.notnull(x) else ""
+)
 
     base_url = f"https://efiling.energy.ca.gov/Lists/DocketLog.aspx?docketnumber={proceeding}"
     references = [
