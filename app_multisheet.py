@@ -136,8 +136,7 @@ def build_styled_docx(references, header_lines=None):
             p.paragraph_format.space_before = Pt(0)
             p.paragraph_format.space_after = Pt(0)
 
-        agency_para = doc.add_paragraph(agency_name.upper())
-        agency_para.alignment = 1
+        agency_para = doc.add_paragraph(agency_name)
         run = agency_para.runs[0]
         run.font.name = 'Tahoma'
         run.font.size = Pt(12)
