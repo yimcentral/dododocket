@@ -99,6 +99,15 @@ def add_styled_hyperlink(paragraph, url, text):
 
 def build_styled_docx(references, header_lines=None):
     doc = Document()
+    from docx.shared import Inches
+    
+    sections = doc.sections
+    for section in sections:
+        section.top_margin = Inches(1)
+        section.bottom_margin = Inches(1)
+        section.left_margin = Inches(1)
+        section.right_margin = Inches(1)
+
     normal = doc.styles['Normal']
     normal.font.name = 'Tahoma'
     normal.font.size = Pt(12)
@@ -117,13 +126,24 @@ def build_styled_docx(references, header_lines=None):
             p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
             p.paragraph_format.space_before = Pt(0)
             p.paragraph_format.space_after = Pt(0)
-        doc.add_paragraph()  # spacer
+        # doc.add_paragraph()  # spacer
 
-    heading = doc.styles['Heading 2']
-    heading.font.name = 'Tahoma'
-    heading.font.size = Pt(12)
-    heading.paragraph_format.space_before = Pt(12)
-    heading.paragraph_format.space_after = Pt(6)
+        # Replace blank line with agency name
+        agency_para = doc.add_paragraph(agency_name.upper())
+        agency_para.alignment = 1
+        run = agency_para.runs[0]
+        run.font.name = 'Tahoma'
+        run.font.size = Pt(12)
+        run.bold = True
+        agency_para.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        agency_para.paragraph_format.space_before = Pt(12)
+        agency_para.paragraph_format.space_after = Pt(6)
+            
+        heading = doc.styles['Heading 2']
+        heading.font.name = 'Tahoma'
+        heading.font.size = Pt(12)
+        heading.paragraph_format.space_before = Pt(12)
+        heading.paragraph_format.space_after = Pt(6)
 
     for ref_text, url in references:
         p = doc.add_paragraph()
@@ -132,8 +152,8 @@ def build_styled_docx(references, header_lines=None):
         run.font.size = Pt(12)
         run.font.underline = False
         run.font.color.rgb = None
-        p.paragraph_format.first_line_indent = Pt(-18)
-        p.paragraph_format.left_indent = Pt(18)
+        p.paragraph_format.first_line_indent = Pt(-36)
+        p.paragraph_format.left_indent = Pt(36)
         p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
         p.paragraph_format.space_before = Pt(6)
         p.paragraph_format.space_after = Pt(6)
