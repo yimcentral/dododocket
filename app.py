@@ -121,17 +121,6 @@ def build_docx(references):
 
     return doc
 
-def build_docx(references):
-    doc = Document()
-    style = doc.styles['Normal']
-    style.font.name = 'Times New Roman'
-    style.font.size = Pt(12)
-    for ref in references:
-        p = doc.add_paragraph(ref)
-        p.paragraph_format.first_line_indent = Pt(-18)
-        p.paragraph_format.left_indent = Pt(18)
-    return doc
-
 if uploaded_file and prefix and agency_name and proceeding:
     try:
         df = pd.read_excel(uploaded_file, engine="odf" if uploaded_file.name.endswith(".ods") else None)
