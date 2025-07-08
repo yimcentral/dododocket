@@ -161,5 +161,5 @@ if uploaded_file and prefix and agency_name and proceeding:
             file_name=f"{project_name}_References.docx",
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
-except Exception as e:
-    st.error(f"❌ Error: {e}")
+    except Exception as e:
+        st.error(f"❌ Error: {e}")
