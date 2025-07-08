@@ -15,14 +15,14 @@ with st.expander("🛈 How to use this tool"):
     st.markdown("[First-time user guide (Word doc)](https://caenergy-my.sharepoint.com/:w:/g/personal/yiming_luo_energy_ca_gov/EZDfTXBgKyxAvGlEmyAf4s4BCiZkErxsJUAIfUAgEyOeCA?e=vgcP3p)")
 
 uploaded_file = st.file_uploader("Upload a spreadsheet (.xlsx or .ods)", type=["xlsx", "ods"])
-project_name = st.text_input("Project Name (for file name)", "Example Project")
-prefix = st.text_input("Global Prefix (e.g., CEC, TT)", "CEC")
+project_name = st.text_input("File name", "Corby BESS")
+prefix = st.text_input("Global Prefix (e.g., CEC, GA, Dudek)", "CEC")
 agency_name = st.text_input("Full Agency Name", "California Energy Commission")
 proceeding = st.text_input("CEC Proceeding Code (e.g. 24-OPT-05)", "24-OPT-05")
 add_header = st.checkbox("Add docket title and headers to top of document")
 
 if add_header:
-    user_project_title = st.text_input("Project Title (for document header)", "")
+    user_project_title = st.text_input("Full Project Name, e.g. Corby Battery Energy Storage System Project"")
 else:
     user_project_title = ""
 
