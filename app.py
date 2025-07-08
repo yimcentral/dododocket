@@ -140,26 +140,26 @@ def build_styled_docx(references, header_lines=None):
 
 if uploaded_file and prefix and agency_name and proceeding:
     try:
-    df = pd.read_excel(uploaded_file, engine="odf" if uploaded_file.name.endswith(".ods") else None)
-    refs = generate_references(df, prefix, agency_name, proceeding)
+        df = pd.read_excel(uploaded_file, engine="odf" if uploaded_file.name.endswith(".ods") else None)
+        refs = generate_references(df, prefix, agency_name, proceeding)
 
-    header_lines = None
-    if add_header and user_project_title.strip():
-        header_lines = [
-            user_project_title.strip(),
-            "DOCKET REFERENCES LIST",
-            proceeding
-        ]
+        header_lines = None
+        if add_header and user_project_title.strip():
+            header_lines = [
+                user_project_title.strip(),
+                "DOCKET REFERENCES LIST",
+                proceeding
+            ]
 
-    doc = build_styled_docx(refs, header_lines=header_lines)
-    buffer = BytesIO()
-    doc.save(buffer)
-    st.success("✅ Reference list ready!")
-    st.download_button(
-        "📥 Download .docx Reference List",
-        buffer.getvalue(),
-        file_name=f"{project_name}_References.docx",
-        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
+        doc = build_styled_docx(refs, header_lines=header_lines)
+        buffer = BytesIO()
+        doc.save(buffer)
+        st.success("✅ Reference list ready!")
+        st.download_button(
+            "📥 Download .docx Reference List",
+            buffer.getvalue(),
+            file_name=f"{project_name}_References.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
 except Exception as e:
     st.error(f"❌ Error: {e}")
