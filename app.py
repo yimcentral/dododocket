@@ -108,12 +108,15 @@ def build_styled_docx(references, header_lines=None):
 
     if header_lines:
         for line in header_lines:
-            p = doc.add_paragraph(line)
+            p = doc.add_paragraph(line.upper())
             p.alignment = 1  # Center
             run = p.runs[0]
             run.font.name = 'Tahoma'
             run.font.size = Pt(14)
             run.bold = True
+            p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+            p.paragraph_format.space_before = Pt(0)
+            p.paragraph_format.space_after = Pt(0)
         doc.add_paragraph()  # spacer
 
     heading = doc.styles['Heading 2']
