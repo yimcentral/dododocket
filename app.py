@@ -42,6 +42,85 @@ def generate_references(df, prefix, agency_name, proceeding):
     ]
     return references
 
+def add_hyperlink(paragraph, url, text):
+    # Create the relationship to the URL
+    part = paragraph.part
+    r_id = part.relate_to(
+        url,
+        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+        is_external=True
+    )
+
+    # Create the w:hyperlink tag
+    hyperlink = OxmlElement("w:hyperlink")
+    hyperlink.set(qn("r:id"), r_id)
+
+    # Create a run with your style
+    new_run = OxmlElement("w:r")
+    rPr = OxmlElement("w:rPr")
+
+    # Remove underline and set color to black
+    u = OxmlElement("w:u")
+    u.set(qn("w:val"), "none")
+
+    color = OxmlElement("w:color")
+    color.set(qn("w:val"), "000000")
+
+    font = OxmlElement("w:rFonts")
+    font.set(qn("w:ascii"), "Tahoma")
+
+    sz = OxmlElement("w:sz")
+    sz.set(qn("w:val"), "24")  # 12pt font
+
+    rPr.append(font)
+    rPr.append(sz)
+    rPr.append(color)
+    rPr.append(u)
+    new_run.append(rPr)
+
+    text_elem = OxmlElement("w:t")
+    text_elem.text = text
+    new_run.append(text_elem)
+    hyperlink.append(new_run)
+    paragraph._p.append(hyperlink)
+
+def build_docx(references):
+    doc = Document()
+
+    # Set default Normal style
+    style = doc.styles['Normal']
+    style.font.name = 'Tahoma'
+    style.font.size = Pt(12)
+    pformat = style.paragraph_format
+    pformat.line_spacing_rule = WD_LINE_SPACING.SINGLE
+    pformat.space_before = Pt(6)
+    pformat.space_after = Pt(6)
+
+    # Heading style
+    heading_style = doc.styles['Heading 2']
+    heading_style.font.name = 'Tahoma'
+    heading_style.font.size = Pt(12)
+    heading_style.paragraph_format.space_before = Pt(12)
+    heading_style.paragraph_format.space_after = Pt(6)
+
+    for ref_text, url in references:
+        p = doc.add_paragraph()
+        run = p.add_run(ref_text + " ")
+        run.font.name = 'Tahoma'
+        run.font.size = Pt(12)
+        run.font.underline = False
+        run.font.color.rgb = None
+        p.paragraph_format.first_line_indent = Pt(-18)
+        p.paragraph_format.left_indent = Pt(18)
+        p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        p.paragraph_format.space_before = Pt(6)
+        p.paragraph_format.space_after = Pt(6)
+
+        # Add styled hyperlink
+        add_hyperlink(p, url, url)
+
+    return doc
+
 def build_docx(references):
     doc = Document()
     style = doc.styles['Normal']
