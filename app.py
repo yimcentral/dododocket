@@ -129,7 +129,7 @@ def build_styled_docx(references, header_lines=None):
         # doc.add_paragraph()  # spacer
 
         # Replace blank line with agency name
-        agency_para = doc.add_paragraph(agency_name.upper())
+        agency_para = doc.add_paragraph(agency_name)
         run = agency_para.runs[0]
         run.font.name = 'Tahoma'
         run.font.size = Pt(12)
