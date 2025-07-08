@@ -22,7 +22,7 @@ proceeding = st.text_input("CEC Proceeding Code (e.g. 24-OPT-05)", "24-OPT-05")
 add_header = st.checkbox("Add docket title and headers to top of document")
 
 if add_header:
-    user_project_title = st.text_input("Full Project Name, e.g. Corby Battery Energy Storage System Project"")
+    user_project_title = st.text_input("Full Project Name, e.g. Corby Battery Energy Storage System Project")
 else:
     user_project_title = ""
 
