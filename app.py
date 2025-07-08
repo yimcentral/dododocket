@@ -3,6 +3,7 @@ import pandas as pd
 from io import BytesIO
 from docx import Document
 from docx.shared import Pt
+from docx.enum.text import WD_LINE_SPACING
 from string import ascii_lowercase
 
 st.set_page_config(page_title="Reference List Generator", layout="centered")
